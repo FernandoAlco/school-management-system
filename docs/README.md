@@ -39,6 +39,7 @@ A school management system built with **Laravel + Filament**, designed to be sel
 - **Money** as `decimal(10,2)`, never `float`.
 - **Business logic outside Resources**: in *Action* classes (`EnrollStudent`, `CalculateFinalGrade`, …) so it is testable.
 - **School data as settings** (`SchoolSettings`), not as a table.
+- **Grades on a 0-100 scale**; the passing grade is configurable in `SchoolSettings` (default 60).
 
 ## Database Schema
 
@@ -76,7 +77,7 @@ attendance_records
 
 grades
   id, course_id FK, student_id FK, term_id FK,
-  score decimal(5,2), comments nullable, timestamps
+  score decimal(5,2), comments nullable, timestamps   -- 0-100 scale
   [unique: course_id, student_id, term_id]
 
 announcements
@@ -120,7 +121,7 @@ payments
 - [x] Enums: `TeacherStatus`, `StudentStatus`, `Gender`, `GuardianRelationship`, `EnrollmentStatus`
 - [x] Factory and relationship tests (`tests/Feature/ModelFactoriesTest.php`)
 - [x] `first_name` / `last_name` on `users` + name sync from profiles (`ProfileObserver`)
-- [ ] `SchoolSettings` + settings page in Filament
+- [x] `SchoolSettings` + settings page in Filament
 - [x] Roles (`super_admin`, `admin`, `teacher`, `guardian`, `student`) + `/admin` access via `User::canAccessPanel()`
 - [ ] Resource permissions with Shield (`shield:generate` once Resources exist)
 - [ ] Realistic demo seeders (a complete school)

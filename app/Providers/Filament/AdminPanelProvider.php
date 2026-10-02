@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Settings\SchoolSettings;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -29,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName(fn (): string => app(SchoolSettings::class)->name)
             ->colors([
                 'primary' => Color::Amber,
             ])
