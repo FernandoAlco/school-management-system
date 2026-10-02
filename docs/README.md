@@ -121,7 +121,8 @@ payments
 - [x] Factory and relationship tests (`tests/Feature/ModelFactoriesTest.php`)
 - [x] `first_name` / `last_name` on `users` + name sync from profiles (`ProfileObserver`)
 - [ ] `SchoolSettings` + settings page in Filament
-- [ ] Roles (`super_admin`, `admin`, `teacher`, `guardian`, `student`) and permissions with Shield
+- [x] Roles (`super_admin`, `admin`, `teacher`, `guardian`, `student`) + `/admin` access via `User::canAccessPanel()`
+- [ ] Resource permissions with Shield (`shield:generate` once Resources exist)
 - [ ] Realistic demo seeders (a complete school)
 - [ ] `/admin` panel: Resources for academic years, terms, grade levels, subjects, classrooms, teachers, students, guardians, sections, enrollments and courses
 - [ ] `EnrollStudent` action (validate section capacity and one enrollment per academic year)

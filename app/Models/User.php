@@ -3,8 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -16,7 +19,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['first_name', 'last_name', 'email', 'password', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements HasName
+class User extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable;
@@ -43,6 +46,18 @@ class User extends Authenticatable implements HasName
     public function guardian(): HasOne
     {
         return $this->hasOne(Guardian::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if (! $this->is_active) {
+            return false;
+        }
+
+        return match ($panel->getId()) {
+            'admin' => $this->hasAnyRole(UserRole::adminRoles()),
+            default => false,
+        };
     }
 
     public function getFilamentName(): string
