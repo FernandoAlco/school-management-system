@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 #[Fillable(['user_id', 'student_number', 'first_name', 'last_name', 'birth_date', 'gender', 'national_id', 'address', 'photo_path', 'status'])]
 #[ObservedBy(ProfileObserver::class)]
@@ -40,6 +41,20 @@ class Student extends Model
             ->using(GuardianStudent::class)
             ->withPivot(['relationship', 'is_primary'])
             ->withTimestamps();
+    }
+
+    /**
+     * Make the given guardian the student's only primary guardian.
+     */
+    public function makePrimaryGuardian(Guardian $guardian): void
+    {
+        DB::transaction(function () use ($guardian): void {
+            GuardianStudent::query()
+                ->where('student_id', $this->getKey())
+                ->update(['is_primary' => false]);
+
+            $this->guardians()->updateExistingPivot($guardian->getKey(), ['is_primary' => true]);
+        });
     }
 
     /**
