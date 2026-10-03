@@ -21,6 +21,7 @@ class UserForm
             ->components([
                 Section::make('Account')
                     ->columns(2)
+                    ->columnSpanFull()
                     ->schema([
                         TextInput::make('first_name')
                             ->required()
@@ -47,6 +48,7 @@ class UserForm
                     ]),
                 Section::make('Access')
                     ->columns(2)
+                    ->columnSpanFull()
                     ->schema([
                         Select::make('roles')
                             ->relationship('roles', 'name')

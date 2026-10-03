@@ -32,6 +32,7 @@ class ManageSchoolSettings extends SettingsPage
         return $schema
             ->components([
                 Section::make('School')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         TextInput::make('name')
@@ -48,6 +49,7 @@ class ManageSchoolSettings extends SettingsPage
                             ->columnSpanFull(),
                     ]),
                 Section::make('Contact')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         TextInput::make('email')
@@ -61,6 +63,7 @@ class ManageSchoolSettings extends SettingsPage
                             ->columnSpanFull(),
                     ]),
                 Section::make('Grading')
+                    ->columnSpanFull()
                     ->description('Grades use a 0-100 scale.')
                     ->schema([
                         TextInput::make('passing_grade')

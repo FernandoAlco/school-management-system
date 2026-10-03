@@ -18,6 +18,7 @@ class StudentForm
         return $schema
             ->components([
                 Section::make('Personal information')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
@@ -46,6 +47,7 @@ class StudentForm
                             ->columnSpanFull(),
                     ]),
                 Section::make('School')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         TextInput::make('student_number')

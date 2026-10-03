@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\GradeLevels\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class GradeLevelForm
@@ -11,17 +12,22 @@ class GradeLevelForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(ignoreRecord: true)
-                    ->placeholder('Grade 1'),
-                TextInput::make('sort_order')
-                    ->label('Order')
-                    ->required()
-                    ->integer()
-                    ->minValue(1)
-                    ->maxValue(255),
+                Section::make('Grade level')
+                    ->columnSpanFull()
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->placeholder('Grade 1'),
+                        TextInput::make('sort_order')
+                            ->label('Order')
+                            ->required()
+                            ->integer()
+                            ->minValue(1)
+                            ->maxValue(255),
+                    ]),
             ]);
     }
 }

@@ -16,6 +16,7 @@ class TeacherForm
         return $schema
             ->components([
                 Section::make('Personal information')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
@@ -33,6 +34,7 @@ class TeacherForm
                             ->maxLength(50),
                     ]),
                 Section::make('Employment')
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         TextInput::make('employee_number')
