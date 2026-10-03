@@ -45,7 +45,9 @@ class AdminPanelProvider extends PanelProvider
                 FilamentInfoWidget::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make()
+                    ->navigationGroup('Settings')
+                    ->navigationSort(2),
             ])
             ->middleware([
                 EncryptCookies::class,

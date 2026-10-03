@@ -123,9 +123,10 @@ payments
 - [x] `first_name` / `last_name` on `users` + name sync from profiles (`ProfileObserver`)
 - [x] `SchoolSettings` + settings page in Filament
 - [x] Roles (`super_admin`, `admin`, `teacher`, `guardian`, `student`) + `/admin` access via `User::canAccessPanel()`
-- [ ] Resource permissions with Shield (`shield:generate` once Resources exist)
+- [x] Resource policies with Shield (`app/Policies`); `super_admin` bypasses them via `Gate::before` (`define_via_gate`)
+- [ ] Seed resource permissions for the `admin` role (currently it can sign in but sees no resources)
 - [x] Realistic demo seeders (a complete school): `php artisan migrate:fresh --seed --seeder=DemoSeeder`
-- [x] `/admin` panel: Resources for academic years (with terms), grade levels, subjects, classrooms, teachers, students, guardians and sections (enrollments and courses are managed inside each section)
+- [x] `/admin` panel: Resources for academic years (with terms), grade levels, subjects, classrooms, teachers, students, guardians, sections (enrollments and courses are managed inside each section) and users
 - [x] `EnrollStudent` action (active students only, section capacity and one enrollment per academic year)
 
 ### Phase 2 — Daily operations

@@ -21,7 +21,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->seed(RoleSeeder::class);
-    $this->actingAs(User::factory()->create()->assignRole(UserRole::Admin));
+    $this->actingAs(User::factory()->create()->assignRole(UserRole::SuperAdmin));
 });
 
 it('lists guardians sorted by last name', function () {

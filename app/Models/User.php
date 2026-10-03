@@ -48,6 +48,14 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->hasOne(Guardian::class);
     }
 
+    /**
+     * Whether the user is linked to a teacher, student or guardian profile, which owns their name.
+     */
+    public function hasProfile(): bool
+    {
+        return $this->teacher()->exists() || $this->student()->exists() || $this->guardian()->exists();
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if (! $this->is_active) {

@@ -28,7 +28,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->seed(RoleSeeder::class);
-    $this->actingAs(User::factory()->create()->assignRole(UserRole::Admin));
+    $this->actingAs(User::factory()->create()->assignRole(UserRole::SuperAdmin));
 
     $this->academicYear = AcademicYear::factory()->current()->create(['name' => '2026-2027']);
 });

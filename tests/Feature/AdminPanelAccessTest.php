@@ -4,6 +4,7 @@ use App\Enums\UserRole;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
@@ -32,6 +33,22 @@ it('forbids inactive admins from accessing the admin panel', function () {
     $user = User::factory()->inactive()->create()->assignRole(UserRole::Admin);
 
     $this->actingAs($user)->get('/admin')->assertForbidden();
+});
+
+it('requires resource permissions for admins', function () {
+    $admin = User::factory()->create()->assignRole(UserRole::Admin);
+
+    $this->actingAs($admin)->get('/admin/students')->assertForbidden();
+
+    $admin->givePermissionTo(Permission::findOrCreate('ViewAny:Student', 'web'));
+
+    $this->actingAs($admin)->get('/admin/students')->assertOk();
+});
+
+it('gives super admins access to every resource without permissions', function () {
+    $superAdmin = User::factory()->create()->assignRole(UserRole::SuperAdmin);
+
+    $this->actingAs($superAdmin)->get('/admin/students')->assertOk();
 });
 
 it('redirects guests to the admin login page', function () {

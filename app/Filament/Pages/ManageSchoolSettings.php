@@ -19,6 +19,8 @@ class ManageSchoolSettings extends SettingsPage
 
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $navigationLabel = 'School Settings';
 
     protected static ?string $title = 'School Settings';
