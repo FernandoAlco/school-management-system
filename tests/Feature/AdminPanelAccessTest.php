@@ -43,5 +43,5 @@ it('seeds every role and a super admin account', function () {
 
     expect(Role::query()->pluck('name')->sort()->values()->all())
         ->toBe(collect(UserRole::cases())->pluck('value')->sort()->values()->all())
-        ->and(User::query()->where('email', 'admin@example.com')->sole()->hasRole(UserRole::SuperAdmin))->toBeTrue();
+        ->and(User::query()->where('email', 'superadmin@example.com')->sole()->hasRole(UserRole::SuperAdmin))->toBeTrue();
 });

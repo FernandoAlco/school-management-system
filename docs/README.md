@@ -124,7 +124,7 @@ payments
 - [x] `SchoolSettings` + settings page in Filament
 - [x] Roles (`super_admin`, `admin`, `teacher`, `guardian`, `student`) + `/admin` access via `User::canAccessPanel()`
 - [ ] Resource permissions with Shield (`shield:generate` once Resources exist)
-- [ ] Realistic demo seeders (a complete school)
+- [x] Realistic demo seeders (a complete school): `php artisan migrate:fresh --seed --seeder=DemoSeeder`
 - [ ] `/admin` panel: Resources for academic years, terms, grade levels, subjects, classrooms, teachers, students, guardians, sections, enrollments and courses
 - [ ] `EnrollStudent` action (validate section capacity and one enrollment per academic year)
 
