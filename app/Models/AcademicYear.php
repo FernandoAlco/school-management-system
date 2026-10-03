@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 #[Fillable(['name', 'starts_on', 'ends_on', 'is_current'])]
 class AcademicYear extends Model
@@ -38,6 +39,18 @@ class AcademicYear extends Model
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    /**
+     * Make this the only current academic year.
+     */
+    public function markAsCurrent(): void
+    {
+        DB::transaction(function (): void {
+            static::query()->whereKeyNot($this->getKey())->update(['is_current' => false]);
+
+            $this->update(['is_current' => true]);
+        });
     }
 
     /**
