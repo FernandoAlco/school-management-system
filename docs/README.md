@@ -125,8 +125,8 @@ payments
 - [x] Roles (`super_admin`, `admin`, `teacher`, `guardian`, `student`) + `/admin` access via `User::canAccessPanel()`
 - [ ] Resource permissions with Shield (`shield:generate` once Resources exist)
 - [x] Realistic demo seeders (a complete school): `php artisan migrate:fresh --seed --seeder=DemoSeeder`
-- [ ] `/admin` panel: Resources for academic years, terms, grade levels, subjects, classrooms, teachers, students, guardians, sections, enrollments and courses
-- [ ] `EnrollStudent` action (validate section capacity and one enrollment per academic year)
+- [x] `/admin` panel: Resources for academic years (with terms), grade levels, subjects, classrooms, teachers, students, guardians and sections (enrollments and courses are managed inside each section)
+- [x] `EnrollStudent` action (active students only, section capacity and one enrollment per academic year)
 
 ### Phase 2 — Daily operations
 

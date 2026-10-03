@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EnrollmentStatus;
 use Database\Factories\SectionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -72,6 +73,26 @@ class Section extends Model
     public function courses(): HasMany
     {
         return $this->hasMany(Course::class);
+    }
+
+    /**
+     * Whether the section has no seats left for active students.
+     */
+    public function isFull(): bool
+    {
+        if ($this->capacity === null) {
+            return false;
+        }
+
+        return $this->enrollments()->where('status', EnrollmentStatus::Active)->count() >= $this->capacity;
+    }
+
+    /**
+     * Label used across the panel, e.g. "Grade 3 A (2026-2027)".
+     */
+    public function getLabel(): string
+    {
+        return "{$this->gradeLevel->name} {$this->name} ({$this->academicYear->name})";
     }
 
     /**
