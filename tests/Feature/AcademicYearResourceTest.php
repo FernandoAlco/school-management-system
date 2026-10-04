@@ -1,10 +1,10 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Filament\Resources\AcademicYears\Pages\CreateAcademicYear;
-use App\Filament\Resources\AcademicYears\Pages\EditAcademicYear;
-use App\Filament\Resources\AcademicYears\Pages\ListAcademicYears;
-use App\Filament\Resources\AcademicYears\RelationManagers\TermsRelationManager;
+use App\Filament\Admin\Resources\AcademicYears\Pages\CreateAcademicYear;
+use App\Filament\Admin\Resources\AcademicYears\Pages\EditAcademicYear;
+use App\Filament\Admin\Resources\AcademicYears\Pages\ListAcademicYears;
+use App\Filament\Admin\Resources\AcademicYears\RelationManagers\TermsRelationManager;
 use App\Models\AcademicYear;
 use App\Models\Section;
 use App\Models\User;

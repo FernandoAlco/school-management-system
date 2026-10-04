@@ -2,11 +2,11 @@
 
 use App\Enums\GuardianRelationship;
 use App\Enums\UserRole;
-use App\Filament\Resources\Guardians\GuardianResource;
-use App\Filament\Resources\Guardians\Pages\CreateGuardian;
-use App\Filament\Resources\Guardians\Pages\EditGuardian;
-use App\Filament\Resources\Guardians\Pages\ListGuardians;
-use App\Filament\Resources\Guardians\RelationManagers\StudentsRelationManager;
+use App\Filament\Admin\Resources\Guardians\GuardianResource;
+use App\Filament\Admin\Resources\Guardians\Pages\CreateGuardian;
+use App\Filament\Admin\Resources\Guardians\Pages\EditGuardian;
+use App\Filament\Admin\Resources\Guardians\Pages\ListGuardians;
+use App\Filament\Admin\Resources\Guardians\RelationManagers\StudentsRelationManager;
 use App\Models\Guardian;
 use App\Models\Student;
 use App\Models\User;

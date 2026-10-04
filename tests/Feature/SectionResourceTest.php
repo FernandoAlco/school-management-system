@@ -2,11 +2,11 @@
 
 use App\Enums\EnrollmentStatus;
 use App\Enums\UserRole;
-use App\Filament\Resources\Sections\Pages\CreateSection;
-use App\Filament\Resources\Sections\Pages\EditSection;
-use App\Filament\Resources\Sections\Pages\ListSections;
-use App\Filament\Resources\Sections\RelationManagers\CoursesRelationManager;
-use App\Filament\Resources\Sections\RelationManagers\EnrollmentsRelationManager;
+use App\Filament\Admin\Resources\Sections\Pages\CreateSection;
+use App\Filament\Admin\Resources\Sections\Pages\EditSection;
+use App\Filament\Admin\Resources\Sections\Pages\ListSections;
+use App\Filament\Admin\Resources\Sections\RelationManagers\CoursesRelationManager;
+use App\Filament\Admin\Resources\Sections\RelationManagers\EnrollmentsRelationManager;
 use App\Models\AcademicYear;
 use App\Models\Course;
 use App\Models\Enrollment;

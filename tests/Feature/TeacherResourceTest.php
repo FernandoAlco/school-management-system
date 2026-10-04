@@ -2,10 +2,10 @@
 
 use App\Enums\TeacherStatus;
 use App\Enums\UserRole;
-use App\Filament\Resources\Teachers\Pages\CreateTeacher;
-use App\Filament\Resources\Teachers\Pages\EditTeacher;
-use App\Filament\Resources\Teachers\Pages\ListTeachers;
-use App\Filament\Resources\Teachers\TeacherResource;
+use App\Filament\Admin\Resources\Teachers\Pages\CreateTeacher;
+use App\Filament\Admin\Resources\Teachers\Pages\EditTeacher;
+use App\Filament\Admin\Resources\Teachers\Pages\ListTeachers;
+use App\Filament\Admin\Resources\Teachers\TeacherResource;
 use App\Models\Teacher;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;

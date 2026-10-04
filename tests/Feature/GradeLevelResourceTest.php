@@ -1,9 +1,9 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Filament\Resources\GradeLevels\Pages\CreateGradeLevel;
-use App\Filament\Resources\GradeLevels\Pages\EditGradeLevel;
-use App\Filament\Resources\GradeLevels\Pages\ListGradeLevels;
+use App\Filament\Admin\Resources\GradeLevels\Pages\CreateGradeLevel;
+use App\Filament\Admin\Resources\GradeLevels\Pages\EditGradeLevel;
+use App\Filament\Admin\Resources\GradeLevels\Pages\ListGradeLevels;
 use App\Models\GradeLevel;
 use App\Models\Section;
 use App\Models\User;

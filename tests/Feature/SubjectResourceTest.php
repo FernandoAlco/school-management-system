@@ -1,9 +1,9 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Filament\Resources\Subjects\Pages\CreateSubject;
-use App\Filament\Resources\Subjects\Pages\EditSubject;
-use App\Filament\Resources\Subjects\Pages\ListSubjects;
+use App\Filament\Admin\Resources\Subjects\Pages\CreateSubject;
+use App\Filament\Admin\Resources\Subjects\Pages\EditSubject;
+use App\Filament\Admin\Resources\Subjects\Pages\ListSubjects;
 use App\Models\Course;
 use App\Models\Subject;
 use App\Models\User;

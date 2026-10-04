@@ -1,9 +1,9 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Filament\Resources\Classrooms\Pages\CreateClassroom;
-use App\Filament\Resources\Classrooms\Pages\EditClassroom;
-use App\Filament\Resources\Classrooms\Pages\ListClassrooms;
+use App\Filament\Admin\Resources\Classrooms\Pages\CreateClassroom;
+use App\Filament\Admin\Resources\Classrooms\Pages\EditClassroom;
+use App\Filament\Admin\Resources\Classrooms\Pages\ListClassrooms;
 use App\Models\Classroom;
 use App\Models\Section;
 use App\Models\User;

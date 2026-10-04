@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\UserRole;
-use App\Filament\Pages\ManageSchoolSettings;
+use App\Filament\Admin\Pages\ManageSchoolSettings;
 use App\Models\User;
 use App\Settings\SchoolSettings;
 use Database\Seeders\RoleSeeder;
