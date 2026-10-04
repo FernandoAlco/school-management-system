@@ -16,6 +16,8 @@ A school management system built with **Laravel + Filament**, designed to be sel
 
 > Decision: **do not** use `saade/filament-fullcalendar`. The timetable is built as a custom Filament page (day × hour grid) and the school calendar as a table grouped by month.
 
+> Decision: timetables use **fixed class periods** (`periods`: 1st period 08:00–08:45, …), not free start/end times per slot. Building a timetable is picking a course per day × period, conflicts are a simple "same day and period" check, and the weekly grid has regular rows. Breaks are the gaps between periods. Limitation: one set of periods for the whole school (an optional `grade_level_id` on `periods` can be added later if levels ring different bells).
+
 ## Architecture
 
 ### Panels
@@ -35,7 +37,7 @@ A school management system built with **Laravel + Filament**, designed to be sel
 - **Names**: `users` and every profile have `first_name` / `last_name` (no `name` column). When a profile has a user, the profile is the source of truth and `ProfileObserver` syncs its name to the user.
 - **`courses` is the core**: subject + section + teacher. Timetables, attendance and grades hang from it.
 - **`enrollments` per academic year**: the student's history is kept year after year.
-- **PHP enums** (`app/Enums`) with `HasLabel` / `HasColor`; stored as `string` in the database.
+- **PHP enums** (`app/Enums`) with `HasLabel` / `HasColor`; stored as `string` in the database (exception: `Weekday`, ISO-8601 `1` = Monday … `7` = Sunday, stored as `tinyint`). School days are Monday to Friday (`Weekday::schoolDays()`), not a setting.
 - **Money** as `decimal(10,2)`, never `float`.
 - **Business logic outside Resources**: in *Action* classes (`EnrollStudent`, `CalculateFinalGrade`, …) so it is testable.
 - **School data as settings** (`SchoolSettings`), not as a table.
@@ -45,13 +47,13 @@ A school management system built with **Laravel + Filament**, designed to be sel
 
 ```
 academic_years → terms
-grade_levels, subjects, classrooms
+grade_levels, subjects, classrooms, periods
 teachers / students / guardians   (optional user_id)
      students ←→ guardian_student ←→ guardians
 sections ← academic_year + grade_level
   ├── enrollments (student enrolled in a section for an academic year)
   └── courses (subject + section + teacher)
-         ├── schedule_slots
+         ├── schedule_slots (course × day × period)
          ├── attendance_sessions → attendance_records
          └── grades (per student and term)
 announcements, events
@@ -61,10 +63,15 @@ fee_concepts → charges → payments
 ### Pending tables (reference)
 
 ```text
+periods
+  id, name unique, starts_at time, ends_at time, timestamps
+  -- ordered by starts_at; periods must not overlap (validated in the app)
+
 schedule_slots
-  id, course_id FK cascade, classroom_id FK nullable,
-  day_of_week tinyint, starts_at time, ends_at time, timestamps
-  [index: day_of_week, starts_at]   -- conflicts validated in the app
+  id, course_id FK cascade, period_id FK, day_of_week tinyint (Weekday),
+  classroom_id FK nullable (null = the section's classroom), timestamps
+  [unique: course_id, day_of_week, period_id]
+  -- section, teacher and classroom conflicts validated in the app (ScheduleCourseSlot)
 
 attendance_sessions
   id, course_id FK, date, taken_by FK→users, timestamps
@@ -132,7 +139,7 @@ payments
 ### Phase 2 — Daily operations
 
 - [ ] `/teacher` and `/portal` panels with `canAccessPanel()` and per-user scopes
-- [ ] Timetables: `schedule_slots` + conflict validation (teacher, classroom, section) + weekly grid page
+- [ ] Timetables: `periods` + `schedule_slots` + conflict validation (teacher, classroom, section) + weekly grid page
 - [ ] Attendance: `attendance_sessions` / `attendance_records` + quick roll-call page
 - [ ] Grades: `grades` + per-term entry + average calculation
 - [ ] PDF report cards with dompdf

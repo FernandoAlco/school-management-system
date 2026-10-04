@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 #[Fillable(['academic_year_id', 'grade_level_id', 'name', 'homeroom_teacher_id', 'classroom_id', 'capacity'])]
 class Section extends Model
@@ -73,6 +74,14 @@ class Section extends Model
     public function courses(): HasMany
     {
         return $this->hasMany(Course::class);
+    }
+
+    /**
+     * @return HasManyThrough<ScheduleSlot, Course, $this>
+     */
+    public function scheduleSlots(): HasManyThrough
+    {
+        return $this->hasManyThrough(ScheduleSlot::class, Course::class);
     }
 
     /**

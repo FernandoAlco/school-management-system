@@ -2,15 +2,19 @@
 
 use App\Enums\EnrollmentStatus;
 use App\Enums\UserRole;
+use App\Enums\Weekday;
 use App\Filament\Admin\Resources\Sections\Pages\CreateSection;
 use App\Filament\Admin\Resources\Sections\Pages\EditSection;
 use App\Filament\Admin\Resources\Sections\Pages\ListSections;
 use App\Filament\Admin\Resources\Sections\RelationManagers\CoursesRelationManager;
 use App\Filament\Admin\Resources\Sections\RelationManagers\EnrollmentsRelationManager;
+use App\Filament\Admin\Resources\Sections\RelationManagers\ScheduleSlotsRelationManager;
 use App\Models\AcademicYear;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\GradeLevel;
+use App\Models\Period;
+use App\Models\ScheduleSlot;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\Subject;
@@ -177,4 +181,80 @@ it('does not assign the same subject twice to a section', function () {
             'subject_id' => $course->subject_id,
         ])
         ->assertHasFormErrors(['subject_id' => 'unique']);
+});
+
+it('lists the section timetable', function () {
+    $course = Course::factory()->for(Section::factory()->for($this->academicYear))->create();
+    $scheduleSlot = ScheduleSlot::factory()->for($course)->create();
+    $otherSectionSlot = ScheduleSlot::factory()->create();
+
+    Livewire::test(ScheduleSlotsRelationManager::class, ['ownerRecord' => $course->section, 'pageClass' => EditSection::class])
+        ->assertCanSeeTableRecords([$scheduleSlot])
+        ->assertCanNotSeeTableRecords([$otherSectionSlot]);
+});
+
+it('adds a class to the section timetable', function () {
+    $course = Course::factory()->for(Section::factory()->for($this->academicYear))->create();
+    $period = Period::factory()->create();
+
+    Livewire::test(ScheduleSlotsRelationManager::class, ['ownerRecord' => $course->section, 'pageClass' => EditSection::class])
+        ->callAction(TestAction::make(CreateAction::class)->table(), data: [
+            'course_id' => $course->id,
+            'day_of_week' => Weekday::Monday->value,
+            'period_id' => $period->id,
+        ])
+        ->assertHasNoFormErrors();
+
+    expect($course->scheduleSlots()->sole())
+        ->day_of_week->toBe(Weekday::Monday)
+        ->period_id->toBe($period->id)
+        ->classroom_id->toBeNull();
+});
+
+it('notifies when a class clashes with the timetable', function () {
+    $scheduleSlot = ScheduleSlot::factory()
+        ->for(Course::factory()->for(Section::factory()->for($this->academicYear)))
+        ->create(['day_of_week' => Weekday::Monday]);
+    $course = Course::factory()->for($scheduleSlot->course->section)->create();
+
+    Livewire::test(ScheduleSlotsRelationManager::class, ['ownerRecord' => $course->section, 'pageClass' => EditSection::class])
+        ->callAction(TestAction::make(CreateAction::class)->table(), data: [
+            'course_id' => $course->id,
+            'day_of_week' => Weekday::Monday->value,
+            'period_id' => $scheduleSlot->period_id,
+        ])
+        ->assertNotified('The class could not be scheduled');
+
+    expect($course->scheduleSlots()->count())->toBe(0);
+});
+
+it('moves a class to another period', function () {
+    $scheduleSlot = ScheduleSlot::factory()
+        ->for(Course::factory()->for(Section::factory()->for($this->academicYear)))
+        ->create(['day_of_week' => Weekday::Monday]);
+    $period = Period::factory()->create();
+
+    Livewire::test(ScheduleSlotsRelationManager::class, ['ownerRecord' => $scheduleSlot->course->section, 'pageClass' => EditSection::class])
+        ->callAction(TestAction::make(EditAction::class)->table($scheduleSlot), data: [
+            'day_of_week' => Weekday::Friday->value,
+            'period_id' => $period->id,
+        ])
+        ->assertHasNoFormErrors();
+
+    expect($scheduleSlot->fresh())
+        ->day_of_week->toBe(Weekday::Friday)
+        ->period_id->toBe($period->id);
+});
+
+it('only offers school days and the section courses', function () {
+    $course = Course::factory()->for(Section::factory()->for($this->academicYear))->create();
+    $otherSectionCourse = Course::factory()->create();
+
+    Livewire::test(ScheduleSlotsRelationManager::class, ['ownerRecord' => $course->section, 'pageClass' => EditSection::class])
+        ->callAction(TestAction::make(CreateAction::class)->table(), data: [
+            'course_id' => $otherSectionCourse->id,
+            'day_of_week' => Weekday::Saturday->value,
+            'period_id' => Period::factory()->create()->id,
+        ])
+        ->assertHasFormErrors(['course_id' => 'in', 'day_of_week' => 'in']);
 });

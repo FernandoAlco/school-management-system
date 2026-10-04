@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\Sections\Pages\EditSection;
 use App\Filament\Admin\Resources\Sections\Pages\ListSections;
 use App\Filament\Admin\Resources\Sections\RelationManagers\CoursesRelationManager;
 use App\Filament\Admin\Resources\Sections\RelationManagers\EnrollmentsRelationManager;
+use App\Filament\Admin\Resources\Sections\RelationManagers\ScheduleSlotsRelationManager;
 use App\Filament\Admin\Resources\Sections\Schemas\SectionForm;
 use App\Filament\Admin\Resources\Sections\Tables\SectionsTable;
 use App\Models\Section;
@@ -52,6 +53,7 @@ class SectionResource extends Resource
         return [
             EnrollmentsRelationManager::class,
             CoursesRelationManager::class,
+            ScheduleSlotsRelationManager::class,
         ];
     }
 

@@ -6,12 +6,15 @@ use App\Enums\Gender;
 use App\Enums\GuardianRelationship;
 use App\Enums\StudentStatus;
 use App\Enums\UserRole;
+use App\Enums\Weekday;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\GradeLevel;
 use App\Models\Guardian;
+use App\Models\Period;
+use App\Models\ScheduleSlot;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\Subject;
@@ -65,6 +68,36 @@ class DemoSeeder extends Seeder
     ];
 
     /**
+     * Class periods of the school day; breaks are the gaps between them.
+     *
+     * @var list<array{name: string, starts_at: string, ends_at: string}>
+     */
+    public const PERIODS = [
+        ['name' => '1st period', 'starts_at' => '08:00', 'ends_at' => '08:45'],
+        ['name' => '2nd period', 'starts_at' => '08:45', 'ends_at' => '09:30'],
+        ['name' => '3rd period', 'starts_at' => '09:45', 'ends_at' => '10:30'],
+        ['name' => '4th period', 'starts_at' => '10:30', 'ends_at' => '11:15'],
+        ['name' => '5th period', 'starts_at' => '11:30', 'ends_at' => '12:15'],
+        ['name' => '6th period', 'starts_at' => '12:15', 'ends_at' => '13:00'],
+    ];
+
+    /**
+     * Weekly periods per subject in every section; they add up to every period of the week.
+     *
+     * @var array<string, int>
+     */
+    public const WEEKLY_PERIODS = [
+        'MATH' => 6,
+        'ENG' => 6,
+        'SCI' => 5,
+        'SOC' => 5,
+        'SPA' => 2,
+        'ART' => 2,
+        'MUS' => 2,
+        'PE' => 2,
+    ];
+
+    /**
      * Families created so far, so that some students can be seeded as siblings.
      *
      * @var list<array{last_name: string, guardians: list<array{guardian: Guardian, relationship: GuardianRelationship}>}>
@@ -85,6 +118,8 @@ class DemoSeeder extends Seeder
 
         $previousSections = $this->seedSections($previousYear, $gradeLevels, $classrooms, $homeroomTeachers, $subjects, $specialistTeachers);
         $currentSections = $this->seedSections($currentYear, $gradeLevels, $classrooms, $homeroomTeachers, $subjects, $specialistTeachers);
+
+        $this->seedTimetables($currentSections, $this->seedPeriods());
 
         $this->seedDemoFamily($currentYear, $previousSections, $currentSections);
         $this->seedStudents($currentYear, $previousSections, $currentSections);
@@ -241,6 +276,64 @@ class DemoSeeder extends Seeder
 
             return [$sectionKey['key'] => $section];
         });
+    }
+
+    /**
+     * @return Collection<int, Period> ordered by start time
+     */
+    private function seedPeriods(): Collection
+    {
+        return collect(self::PERIODS)->map(fn (array $period): Period => Period::factory()->create([
+            'name' => $period['name'],
+            'starts_at' => "{$period['starts_at']}:00",
+            'ends_at' => "{$period['ends_at']}:00",
+        ]));
+    }
+
+    /**
+     * Fill every period of the week in every section without clashes. The week is numbered as
+     * cells 0-29 (day × period); specialist subjects rotate through cells so that each specialist,
+     * who teaches every section, never has two classes in the same cell.
+     *
+     * @param  Collection<string, Section>  $sections
+     * @param  Collection<int, Period>  $periods
+     */
+    private function seedTimetables(Collection $sections, Collection $periods): void
+    {
+        $schoolDays = Weekday::schoolDays();
+        $cellsPerWeek = count($schoolDays) * $periods->count();
+        $specialistCodes = array_keys(self::SPECIALIST_SUBJECTS);
+        $now = now();
+
+        $slots = $sections->values()->flatMap(function (Section $section, int $sectionIndex) use ($schoolDays, $periods, $cellsPerWeek, $specialistCodes, $now): array {
+            $courses = $section->courses()->with('subject')->get()->keyBy('subject.code');
+            $courseByCell = [];
+
+            foreach ($specialistCodes as $specialistIndex => $code) {
+                foreach (range(0, self::WEEKLY_PERIODS[$code] - 1) as $weeklyIndex) {
+                    $courseByCell[(2 * $sectionIndex + $weeklyIndex + 7 * $specialistIndex) % $cellsPerWeek] = $courses[$code];
+                }
+            }
+
+            $freeCells = array_values(array_diff(range(0, $cellsPerWeek - 1), array_keys($courseByCell)));
+
+            foreach (array_keys(self::CORE_SUBJECTS) as $code) {
+                foreach (array_splice($freeCells, 0, self::WEEKLY_PERIODS[$code]) as $cell) {
+                    $courseByCell[$cell] = $courses[$code];
+                }
+            }
+
+            return collect($courseByCell)->map(fn (Course $course, int $cell): array => [
+                'course_id' => $course->id,
+                'day_of_week' => $schoolDays[intdiv($cell, $periods->count())]->value,
+                'period_id' => $periods[$cell % $periods->count()]->id,
+                'classroom_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->values()->all();
+        });
+
+        ScheduleSlot::query()->insert($slots->all());
     }
 
     /**

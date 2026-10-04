@@ -2,10 +2,12 @@
 
 use App\Enums\GuardianRelationship;
 use App\Enums\StudentStatus;
+use App\Enums\Weekday;
 use App\Models\AcademicYear;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Guardian;
+use App\Models\ScheduleSlot;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -81,3 +83,17 @@ it('orders terms within an academic year', function () {
     expect(AcademicYear::current()->sole()->terms->pluck('name')->all())
         ->toBe(['Term 1', 'Term 2']);
 });
+
+it('creates a schedule slot on a school day and reaches it from its section', function () {
+    $scheduleSlot = ScheduleSlot::factory()->create();
+
+    expect($scheduleSlot->day_of_week)->toBeIn(Weekday::schoolDays())
+        ->and($scheduleSlot->period->scheduleSlots)->toHaveCount(1)
+        ->and($scheduleSlot->course->section->scheduleSlots->sole()->is($scheduleSlot))->toBeTrue();
+});
+
+it('prevents scheduling a course twice in the same day and period', function () {
+    $scheduleSlot = ScheduleSlot::factory()->create();
+
+    ScheduleSlot::factory()->create($scheduleSlot->only(['course_id', 'day_of_week', 'period_id']));
+})->throws(QueryException::class);
